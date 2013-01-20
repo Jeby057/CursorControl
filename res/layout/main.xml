@@ -5,17 +5,17 @@
     tools:context=".MainActivity"
     android:orientation="vertical" >
 
-       <com.ihm.renders.grid.GridRenderView
+       <com.ihm.app.graphics.CursorTestView
            android:id="@+id/uiRender"
            android:layout_width="fill_parent"
            android:layout_height="fill_parent"
-           android:layout_weight="0.2" />
+           android:layout_weight="0.45" />
 
        <com.ihm.app.graphics.MicroRollGestureView
            android:id="@+id/uiGesture"
            android:layout_width="fill_parent"
            android:layout_height="fill_parent"
-           android:layout_weight="0.8"
+           android:layout_weight="0.55"
            android:background="#d6d6d6" />
 
    </LinearLayout>

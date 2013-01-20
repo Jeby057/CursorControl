@@ -2,6 +2,7 @@ package com.ihm.renders.grid;
 
 import android.graphics.PointF;
 
+import com.ihm.app.graphics.GridRenderData;
 import com.ihm.maths.mapping.MappingFunction;
 import com.ihm.renders.RenderControl;
 

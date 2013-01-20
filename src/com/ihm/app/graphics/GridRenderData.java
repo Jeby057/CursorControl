@@ -1,4 +1,4 @@
-package com.ihm.renders.grid;
+package com.ihm.app.graphics;
 
 import java.util.ArrayList;
 

@@ -13,6 +13,8 @@ public class Clock implements Runnable{
 	// Listener appelé à chaque rafraichissement
 	OnClockListener _listener;
 	
+	boolean _finished = false;
+	
 	/**
 	 * Constructeur 
 	 * @param listener Listener qui sera appelé à chaque rafraichissement
@@ -33,7 +35,17 @@ public class Clock implements Runnable{
 	
 	@Override
 	public void run() {
-		refresh();
+		if(!_finished)
+			refresh();
+	}
+	
+	public void start() {
+		_finished = false;
+		run();
+	}
+	
+	public void stop() {
+		_finished = true;
 	}
 	
 	/**

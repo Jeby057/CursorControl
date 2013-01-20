@@ -14,10 +14,10 @@ public class MicroRollGestureView extends View{
 	Paint _paint = new Paint();
 	
 	// Rayon du cercle extérieur
-	int _circleOutRadius = 50;
+	float _circleOutRadius = 50;
 	
 	// Rayon du cercle intérieur
-	int _circleInRadius = 10;
+	float _circleInRadius = 10;
 	
 	// Position du cercle
 	PointF _circleLocation = new PointF();
@@ -28,8 +28,13 @@ public class MicroRollGestureView extends View{
 	// Boolean permettant d'afficher ou de ne pas afficher le cercle
 	boolean _print = false;
 	
+	// Décalage X, Y du cercle
+	PointF _offset = new PointF();
+	
 	// Tableaux d'information
 	String[] _infos = new String[]{};
+	
+	float _infoTextSize = 24;
 	
 	public MicroRollGestureView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -47,7 +52,7 @@ public class MicroRollGestureView extends View{
 	 * Modifie le rayon exterieur du cercle
 	 * @param radius Nouveau rayon
 	 */
-	public void setCircleOutRadius(int radius){
+	public void setCircleOutRadius(float radius){
 		_circleOutRadius = radius;
 	}
 	
@@ -55,7 +60,7 @@ public class MicroRollGestureView extends View{
 	 * Modifie le rayon intérieur du cercle
 	 * @param radius Nouveau rayon
 	 */
-	public void setCircleInRadius(int radius){
+	public void setCircleInRadius(float radius){
 		_circleInRadius = radius;
 	}
 	
@@ -90,16 +95,28 @@ public class MicroRollGestureView extends View{
 	public void setPrint(boolean print){
 		_print = print;
 	}
+	
+	public void setTextInfoSize(float infoTextSize){
+		_infoTextSize = infoTextSize;
+	}
 
+	
+	/**
+	 * Modifie l'offset permettant de décaler en x et y le cercle
+	 * @param offset Décalage X, Y
+	 */
+	public void setOffset(PointF offset) {
+		this._offset = offset;
+	}
 
 	@Override
 	public void onDraw(Canvas canvas) {
 		
 		// Affichage des informations
 		_paint.setColor(Color.BLACK);
-        _paint.setTextSize(24);
+        _paint.setTextSize(_infoTextSize);
         for (int i = 0; i < _infos.length; i++) {
-            canvas.drawText(_infos[i], 0, 24 * (i + 1), _paint);
+            canvas.drawText(_infos[i], 0, _infoTextSize * (i + 1), _paint);
 		}
 	        
         // On ne dessine uniquement les informations relatives au pointage
@@ -109,16 +126,16 @@ public class MicroRollGestureView extends View{
 		
 		// Cercle exterieur
 		_paint.setColor(Color.RED);
-        canvas.drawCircle(_circleLocation.x, _circleLocation.y, _circleOutRadius, _paint);
+        canvas.drawCircle(_circleLocation.x + _offset.x, _circleLocation.y + _offset.y, _circleOutRadius, _paint);
         
         // Cercle intérieur
         _paint.setColor(Color.WHITE);
-        canvas.drawCircle(_circleLocation.x, _circleLocation.y, _circleInRadius, _paint);
+        canvas.drawCircle(_circleLocation.x + _offset.x, _circleLocation.y + _offset.y, _circleInRadius, _paint);
         
         // Pointeur
 		_paint.setColor(Color.BLUE);
-        canvas.drawLine(_pointerLocation.x, 0, _pointerLocation.x, getHeight(), _paint);
-        canvas.drawLine(0, _pointerLocation.y, getWidth(), _pointerLocation.y,  _paint);       
+        canvas.drawLine(_pointerLocation.x + _offset.x,  0, _pointerLocation.x + _offset.x, getHeight(), _paint);
+        canvas.drawLine(0, _pointerLocation.y + _offset.y, getWidth(), _pointerLocation.y + _offset.y,  _paint);       
 	}
 	
 	

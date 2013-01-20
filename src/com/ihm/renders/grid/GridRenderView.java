@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 
+import com.ihm.app.graphics.GridRenderData;
 import com.ihm.renders.RenderView;
 
 public class GridRenderView extends RenderView{

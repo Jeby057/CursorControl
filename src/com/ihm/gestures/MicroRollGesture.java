@@ -1,10 +1,10 @@
 package com.ihm.gestures;
 
-import com.ihm.maths.MathUtils;
-
 import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.ihm.maths.MathUtils;
 
 public class MicroRollGesture extends Gesture{
 
@@ -13,20 +13,28 @@ public class MicroRollGesture extends Gesture{
 	}
 
 	// Dernier Roll effectué
-	PointF _roll = new PointF();
+	float _roll = 0.0F;
+	
+	PointF _direction = new PointF();
 	
 	// Portée de la zone (Rayon)
 	float _scope = 50;
 	
 	// Taille de l'espace neutre
-	float _nullAreaSize = 10;
+	float _nullAreaRadius = 15;
 	
 	// Autorise la translation de la zone si l'utilisateur 
 	// sort de celle-ci
 	boolean _allowTranslateArea = true;
 	
-	public PointF getMicroRoll(){
+	boolean _isInNullArea = false;
+	
+	public float getMicroRollValue(){
 		return _roll;
+	}
+	
+	public PointF getMicroRollDirection(){
+		return _direction;
 	}
 	
 	public void setScope(float scope){
@@ -34,48 +42,66 @@ public class MicroRollGesture extends Gesture{
 	}
 	
 	public void setNullAreaSize(float size){
-		_nullAreaSize = size;
+		_nullAreaRadius = size;
 	}
 	
 	@Override
 	public boolean onTouch(View arg, MotionEvent e) {
+		
+		
 		if(super.onTouch(arg, e)){
 			raiseListener();
 			return true;
 		}
 		
+		if(e.getAction() == MotionEvent.ACTION_DOWN){
+			_isInNullArea = true;
+		}
+		
 		if(e.getAction() == MotionEvent.ACTION_UP){
-			_roll.set(0, 0);
+			_roll = 0.0F;
 			return false;
 		}
 		
 		// Nouveau roll
-		PointF newRoll = new PointF(e.getX() - _firstPosition.x, e.getY() - _firstPosition.y);
-
+		PointF v = new PointF(e.getX() - _firstPosition.x, e.getY() - _firstPosition.y);
+		
+		_roll = MathUtils.norme(v) /*- _nullAreaRadius*/;
+		_direction = new PointF(v.x/MathUtils.norme(v), v.y/MathUtils.norme(v));
+		
 		// Vérification de la porté du micro roll 
-		if (!MathUtils.isInCircle(_firstPosition, new PointF(e.getX(), e.getY()), _scope)) {
+		if (_roll > _scope) {
 			
 			// Si le geste en mode hors de porté est autorité
 			// On translate la zone de roll
 			if(_allowTranslateArea){
 				
 				// Calcul de la nouvelle position de la zone de Micro Roll
-				double hypoRectRoll = Math.sqrt(MathUtils.square(newRoll.x) + MathUtils.square(newRoll.y));
-				_firstPosition.x += newRoll.x - _scope / hypoRectRoll * newRoll.x;
-				_firstPosition.y += newRoll.y - _scope / hypoRectRoll * newRoll.y;
-
+				_firstPosition.x = e.getX() - _direction.x * _scope;
+				_firstPosition.y = e.getY() - _direction.y * _scope;
 			}
 			else
 				return false;
-		} 
+		}
 
 		// Vérification de la porté de la zone null
-		else if(MathUtils.isInCircle(_firstPosition, new PointF(e.getX(), e.getY()), _nullAreaSize))
-			_roll.set(0,0);
+		if(_roll < _nullAreaRadius){
+			_roll = 0.0F;
+			
+			// Recentre le virtual pad sur le doigt quand on rentre dans la zone null
+			if(!_isInNullArea){
+				_firstPosition.set(e.getX(), e.getY());
+				_isInNullArea = true;
+			}
+		}
 		
 		// Mise à jour du vecteur de roll
-		else
-			_roll.set(newRoll.x, newRoll.y);
+		else{ 
+			// On soustrait la zone neutre
+			_roll -= _nullAreaRadius;
+			
+			_isInNullArea = false;
+		}
 		
 		// Appel du listener
 		raiseListener();

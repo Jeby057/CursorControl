@@ -35,6 +35,10 @@ public class Gesture implements OnTouchListener{
 	
 	@Override
 	public boolean onTouch(View arg0, MotionEvent e){
+		
+		// Récupère la densité : 
+		float scale = arg0.getResources().getDisplayMetrics().density;
+				
 		_position.x = e.getX();
 		_position.y = e.getY();
  

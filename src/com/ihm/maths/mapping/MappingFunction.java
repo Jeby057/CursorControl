@@ -11,13 +11,13 @@ public abstract class MappingFunction {
 	}
 	
 	public float execute(float value){
-		return run(value * _sensibility);
+		return run(Math.abs(value) * _sensibility) * ( (value==0) ? 0:(Math.abs(value)/value));
+	}
+	
+	public PointF execute(PointF point){
+		point = new PointF(execute(point.x), execute(point.y));
+		return point;
 	}
 	
 	protected abstract float run(float value);
-	
-	public PointF execute(PointF point){
-		point.set(execute(point.x), execute(point.y));
-		return point;
-	}
 }

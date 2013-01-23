@@ -33,6 +33,11 @@ public class MicroRollGestureActivity extends Activity implements OnGestureListe
 	
 	private PseudoHapticProjection _pseudoHaptiqueProjection;
 	
+	boolean _showReticule = true;
+	
+	float _scale = 0;
+	
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,28 +65,29 @@ public class MicroRollGestureActivity extends Activity implements OnGestureListe
 		_renderView = (CursorTestView) findViewById(R.id.uiRender);
 		
 		// Récupère la densité : 
-		float scale = 2 / getResources().getDisplayMetrics().density;
+		_scale = getResources().getDisplayMetrics().xdpi / 345.0566F;
 		
 		// Paramétrage des vues
-		_gestureView.setCircleOutRadius(70 / scale);
-		_gestureView.setCircleInRadius(25 / scale);
-		_gestureView.setOffset(new PointF(- 255 / scale, 0));
-		_gestureView.setTextInfoSize(20 / scale);
+		_gestureView.setCircleOutRadius(70 *_scale);
+		_gestureView.setCircleInRadius(25 * _scale);
+		_gestureView.setOffset(new PointF(- 255 * _scale, 0));
+		_gestureView.setTextInfoSize(20 * _scale);
 		
 		_renderView.setNbLines(15);
 		_renderView.setMinCols(5);
-		_renderView.setMinColSize(15 / scale);
-		_renderView.setMaxColSize(30 / scale);
-		_renderView.setOffset(15 / scale);
-		_renderView.setHeightLine(35 / scale);
-		_renderView.setSpacing(12 / scale);
-		_renderView.setReticuleSize(50 / scale);
+		_renderView.setMinColSize(15 * _scale);
+		_renderView.setMaxColSize(30 * _scale);
+		_renderView.setOffset(15 * _scale);
+		_renderView.setHeightLine(35 * _scale);
+		_renderView.setSpacing(12 * _scale);
+		_renderView.setReticuleSize(50 * _scale);
 		_renderView.setGridFractal(10);
 		_renderView.setCursorLocation(new PointF(_renderView.getOffset(), _renderView.getOffset()));
+		_renderView.setShowReticule(true);
 		
 		// Paramétrage du geste
-		_gesture.setScope(70 / scale);
-		_gesture.setNullAreaSize(20 / scale);
+		_gesture.setScope(70 * _scale);
+		_gesture.setNullAreaSize(25 * _scale);
 		
 		// Paramétrage de la fonction de mapping
 		_gestureMapping.setSensibility(0.18F);
@@ -92,7 +98,8 @@ public class MicroRollGestureActivity extends Activity implements OnGestureListe
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.itMenuShowCursor:
-	        	_renderView.setShowReticule(!_renderView.isShowReticule());
+	        	_showReticule = !_showReticule;
+	        	_renderView.setShowReticule(_showReticule);
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -131,12 +138,17 @@ public class MicroRollGestureActivity extends Activity implements OnGestureListe
 	
 	@Override
 	public void onStartGesture() {
+		//if(_showReticule)
+		//	_renderView.setShowReticule(true);
 		_gestureView.setPrint(true);
 		_renderView.autoplaceResticule();
 	}
 	
 	@Override
 	public void onStopGesture() {
+		//if(_showReticule)
+			//_renderView.setShowReticule(false);
+		
 		_gestureView.setPrint(false);
 	}
 	
@@ -147,11 +159,8 @@ public class MicroRollGestureActivity extends Activity implements OnGestureListe
 	
 	public void update(){
 		
-		// Récupère la densité : 
-		float scale = 2 / getResources().getDisplayMetrics().density;
-		
 		// Application de la fonction de mapping
-		float microroll = _gestureMapping.execute(_gesture.getMicroRollValue() * scale);
+		float microroll = _gestureMapping.execute(_gesture.getMicroRollValue() / _scale) * _scale;
 
 		// Application d'une aide pseudo haptique
 		PointF direction = _pseudoHaptiqueProjection.projection(_gesture.getMicroRollDirection());
@@ -166,14 +175,17 @@ public class MicroRollGestureActivity extends Activity implements OnGestureListe
 			// Insertions des informations sur le micro-rolls
 			DecimalFormat format = new DecimalFormat("##0.00");
 			_gestureView.setInfos(new String[]{
+					" Scale :" + _scale, 
 					" Original MicroRoll : ", 
-					" - Value : " + format.format(_gesture.getMicroRollValue() * scale)+ "px", 
+					" - Value : " + format.format(_gesture.getMicroRollValue())+ "px", 
+					" - Map Value : " + format.format(_gesture.getMicroRollValue() / _scale)+ "px", 
 					" - Direction : ",  
 					"   - X : " +format.format(_gesture.getMicroRollDirection().x)+"px", 
 					"   - Y : " +format.format(_gesture.getMicroRollDirection().y)+"px",
 					"  ", 
 					" Modified MicroRoll : ", 
-					" - Value :" + format.format(microroll)+ "px", 
+					" - Value :" + format.format(microroll)+ "px",
+					" - Map Value :" + format.format(microroll / _scale)+ "px", 
 					" - Direction :",  
 					"   - X : " +format.format(direction.x)+"px", 
 					"   - Y : " +format.format(direction.y)+"px",

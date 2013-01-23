@@ -18,14 +18,14 @@ public class PseudoHapticProjection {
 		PointF vector = new PointF(Math.abs(v.x), Math.abs(v.y));
 		
 		// Déplacement horizontal
-		if(vector.x > vector.y && v.x != 0){
+		if(vector.x > vector.y && vector.x != 0){
 			if(isInGap(vector.y, vector.x)){
 				return new PointF(v.x, 0);
 			}
 		}
 		
 		// Déplacement vertical
-		else if(vector.x < vector.y && v.y != 0){
+		else if(vector.x < vector.y && vector.y != 0){
 			if(isInGap(vector.x, vector.y)){
 				return new PointF(0, v.y);
 			}

@@ -66,6 +66,12 @@ public class MicroRollGesture extends Gesture{
 		// Nouveau roll
 		PointF v = new PointF(e.getX() - _firstPosition.x, e.getY() - _firstPosition.y);
 		
+		// Vérification du vecteur null
+		if(v.x == 0 || v.y == 0){
+			return false;
+		}
+		
+		
 		_roll = MathUtils.norme(v) /*- _nullAreaRadius*/;
 		_direction = new PointF(v.x/MathUtils.norme(v), v.y/MathUtils.norme(v));
 		
@@ -79,6 +85,10 @@ public class MicroRollGesture extends Gesture{
 				// Calcul de la nouvelle position de la zone de Micro Roll
 				_firstPosition.x = e.getX() - _direction.x * _scope;
 				_firstPosition.y = e.getY() - _direction.y * _scope;
+				
+				v = new PointF(e.getX() - _firstPosition.x, e.getY() - _firstPosition.y);
+				_roll = MathUtils.norme(v) ;
+				_direction = new PointF(v.x/MathUtils.norme(v), v.y/MathUtils.norme(v));
 			}
 			else
 				return false;
